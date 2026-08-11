@@ -1,0 +1,8 @@
+RewriteEngine On
+RewriteBase /mini-drive/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+
+RedirectMatch 403 ^/app/.*$
+RedirectMatch 403 ^/config/.*$
