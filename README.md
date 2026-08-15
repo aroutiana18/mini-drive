@@ -143,11 +143,16 @@ Mini Drive is currently being developed as a personal learning project focused o
 
 ![Mini Drive Trash](docs/trash.png)
 
-## 👤 Author
-
-**Arotiana MAHERINANDRASANA**
+## 👤 Authors
 
 Computer Science student focused on **Systems & Network Administration**.
 
+**Arotiana Brad Florentin MAHERINANDRASANA**
+
 - GitHub: [@aroutiana18](https://github.com/aroutiana18)
 - LinkedIn: [Arotiana](https://www.linkedin.com/in/arotiana-brad-florentin-maherinandrasana/)
+
+**Fy Mijoro LAHATRINIAVO**
+
+- GitHub: [@fymijoro](https://github.com/fymijoro)
+- LinkedIn: [Fy Mijoro](https://www.linkedin.com/in/fy-mijoro-lahatriniavo-1453a93b1/)
