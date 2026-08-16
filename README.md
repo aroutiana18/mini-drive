@@ -143,7 +143,7 @@ Mini Drive is currently being developed as a personal learning project focused o
 
 ![Mini Drive Trash](docs/trash.png)
 
-## 👤 Authors
+## 👥 Authors
 
 Computer Science student focused on **Systems & Network Administration**.
 
