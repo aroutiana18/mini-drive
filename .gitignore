@@ -26,3 +26,12 @@ public/uploads/*
 # ----------------------------------------------------------------------
 *.log
 config/db_credentials.php  # Si tu isoles un jour tes accès DB secrets
+
+# ----------------------------------------------------------------------
+# Configuration contenant des secrets
+config/config.local.php
+config/db_credentials.php
+.env
+.env.*
+!.env.example
+# ----------------------------------------------------------------------

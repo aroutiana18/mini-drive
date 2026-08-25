@@ -17,7 +17,7 @@ abstract class Controller {
     }
 
     protected function isLoggedIn() {
-        return isset($_SESSION['user_id']);
+        return isset($_SESSION['user_email']);
     }
 
     protected function requireLogin() {

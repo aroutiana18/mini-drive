@@ -4,47 +4,86 @@ namespace App\Services;
 
 class LdapService
 {
-
-    public function authenticate($email, $password)
+    public function authenticate(string $email, string $password): array|false
     {
-        // 1. Vérifier si les champs ne sont pas vides
-        if (empty($email) || empty($password)) {
+        $email = trim($email);
+
+        if ($email === '' || $password === '') {
             return false;
         }
 
-        // 2. Connexion au serveur OpenLDAP
-        $connection = ldap_connect($this->host, $this->port);
-        if (!$connection) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return false;
         }
 
-        // 3. Paramétrage des options LDAP indispensables
-        ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
-        ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
+        $connection = ldap_connect(
+            LDAP_HOST,
+            LDAP_PORT
+        );
 
-        // 4. Construction du DN de l'utilisateur
-        $userDn = "uid=" . $email . ",ou=users," . $this->baseDn;
+        if ($connection === false) {
+            return false;
+        }
 
-        // 5. Tentative de liaison (Bind) avec le mot de passe fourni par l'utilisateur
-        @$bind = ldap_bind($connection, $userDn, $password);
+        // Configuration LDAP.
+        ldap_set_option(
+            $connection,
+            LDAP_OPT_PROTOCOL_VERSION,
+            3
+        );
 
-        if ($bind) {
-            
-            $filter = "(uid=" . $email . ")";
-            $search = ldap_search($connection, "ou=users," . $this->baseDn, $filter);
-            $entries = ldap_get_entries($connection, $search);
+        ldap_set_option(
+            $connection,
+            LDAP_OPT_REFERRALS,
+            0
+        );
 
+        $filter = '(&(objectClass=inetOrgPerson)(mail=' .
+            ldap_escape($email, '', LDAP_ESCAPE_FILTER) .
+            '))';
+
+        $search = @ldap_search(
+            $connection,
+            LDAP_BASE_DN,
+            $filter,
+            ['dn', 'mail', 'cn']
+        );
+
+        if ($search === false) {
             ldap_unbind($connection);
-
-            if ($entries['count'] > 0) {
-                return [
-                    'email' => $email,
-                    'cn'    => $entries[0]['cn'][0] ?? $email,
-                ];
-            }
+            return false;
         }
+
+        $entries = ldap_get_entries(
+            $connection,
+            $search
+        );
+
+        if ($entries === false || $entries['count'] !== 1) {
+            ldap_unbind($connection);
+            return false;
+        }
+
+        $userDn = $entries[0]['dn'];
+
+        $authenticated = @ldap_bind(
+            $connection,
+            $userDn,
+            $password
+        );
+
+        if (!$authenticated) {
+            ldap_unbind($connection);
+            return false;
+        }
+
+        $user = [
+            'email' => $entries[0]['mail'][0] ?? $email,
+            'cn'    => $entries[0]['cn'][0] ?? $email,
+        ];
 
         ldap_unbind($connection);
-        return false;
+
+        return $user;
     }
 }

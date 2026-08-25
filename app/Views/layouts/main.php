@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Drive | Cloud Sécurisé</title>
+    <title>Mini Drive</title>
  
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -32,7 +32,7 @@
                             <span class="ml-3 text-xl font-extrabold text-slate-800 tracking-tight">Mini Drive</span>
                         </a>
                     </div>
-                    <?php if (isset($_SESSION['user_id'])): ?>
+                    <?php if (isset($_SESSION['user_email'])): ?>
                     <div class="flex items-center gap-6">
                         <div class="hidden md:flex flex-col text-right">
                             <span class="text-sm font-bold text-slate-700"><?= htmlspecialchars($_SESSION['username']) ?></span>

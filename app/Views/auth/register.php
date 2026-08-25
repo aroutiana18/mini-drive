@@ -1,5 +1,21 @@
 <div class="w-full max-w-md">
 
+    <div class="mb-4">
+        <a
+            href="<?= BASE_URL ?>/login"
+            class="inline-flex items-center gap-2
+                   text-gray-500 hover:text-blue-600
+                   text-sm font-semibold
+                   transition-colors duration-200"
+        >
+            <i class="fas fa-arrow-left text-xs"></i>
+
+            <span>
+                Retour
+            </span>
+        </a>
+    </div>
+
     <div class="text-center mb-8">
 
         <div class="inline-flex items-center justify-center w-16 h-16

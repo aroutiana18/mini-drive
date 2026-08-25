@@ -14,7 +14,7 @@ class FileController extends Controller {
 
     public function index() {
         $parentId = isset($_GET['folder']) ? (int)$_GET['folder'] : null;
-        $files = $this->fileModel->getRootContents($_SESSION['user_id'], $parentId);
+        $files = $this->fileModel->getRootContents($_SESSION['user_email'], $parentId);
         $parentFolder = null;
         if ($parentId !== null) {
             $parentFolder = $this->fileModel->getParentId($parentId);
@@ -31,7 +31,7 @@ class FileController extends Controller {
             $name = trim($_POST['name'] ?? '');
             $parentId = isset($_POST['parent_id']) && $_POST['parent_id'] !== '' ? (int)$_POST['parent_id'] : null;
             if (!empty($name)) {
-                $this->fileModel->createFolder($_SESSION['user_id'], $name, $parentId);
+                $this->fileModel->createFolder($_SESSION['user_email'], $name, $parentId);
             }
         }
         $redirectUrl = 'dashboard' . (isset($parentId) && $parentId ? "?folder=$parentId" : '');
@@ -63,7 +63,7 @@ class FileController extends Controller {
             $destination = UPLOAD_DIR . $uniqueName;
             if (move_uploaded_file($file['tmp_name'], $destination)) {
                 $path = $parentId ? $this->fileModel->getPath($parentId) . '/' . $uniqueName : $uniqueName;
-                $this->fileModel->createFile($_SESSION['user_id'], $file['name'], $uniqueName, $file['size'], $mime, $path, $parentId);
+                $this->fileModel->createFile($_SESSION['user_email'], $file['name'], $uniqueName, $file['size'], $mime, $path, $parentId);
                 echo "success";
             } else {
                 echo "Erreur déplacement";
@@ -78,7 +78,7 @@ class FileController extends Controller {
             $parentId = isset($_POST['parent_id']) && $_POST['parent_id'] !== '' ? (int)$_POST['parent_id'] : null;
             $files = $_FILES['files'];
             $paths = isset($_POST['paths']) ? $_POST['paths'] : [];
-            $userId = $_SESSION['user_id'];
+            $userEmail = $_SESSION['user_email'];
             $uploadedCount = 0;
             $createdFolders = [];
 
@@ -95,12 +95,12 @@ class FileController extends Controller {
                     foreach ($folders as $folderName) {
                         $key = $currentParentId . '_' . $folderName;
                         if (!isset($createdFolders[$key])) {
-                            $existing = $this->fileModel->findFolderByName($userId, $folderName, $currentParentId);
+                            $existing = $this->fileModel->findFolderByName($userEmail, $folderName, $currentParentId);
                             if ($existing) {
                                 $currentParentId = $existing['id'];
                             } else {
-                                $this->fileModel->createFolder($userId, $folderName, $currentParentId);
-                                $newFolder = $this->fileModel->findFolderByName($userId, $folderName, $currentParentId);
+                                $this->fileModel->createFolder($userEmail, $folderName, $currentParentId);
+                                $newFolder = $this->fileModel->findFolderByName($userEmail, $folderName, $currentParentId);
                                 $currentParentId = $newFolder['id'];
                             }
                             $createdFolders[$key] = $currentParentId;
@@ -125,7 +125,7 @@ class FileController extends Controller {
                 $destination = UPLOAD_DIR . $uniqueName;
                 if (move_uploaded_file($tmpName, $destination)) {
                     $filePath = $this->fileModel->getPath($currentParentId) . '/' . $uniqueName;
-                    $this->fileModel->createFile($userId, $originalName, $uniqueName, $size, $mime, $filePath, $currentParentId);
+                    $this->fileModel->createFile($userEmail, $originalName, $uniqueName, $size, $mime, $filePath, $currentParentId);
                     $uploadedCount++;
                 }
             }
@@ -137,7 +137,7 @@ class FileController extends Controller {
 
     public function download() {
         $id = (int)($_GET['id'] ?? 0);
-        $file = $this->fileModel->getById($id, $_SESSION['user_id']);
+        $file = $this->fileModel->getById($id, $_SESSION['user_email']);
         if ($file && !$file['is_folder']) {
             $fullPath = UPLOAD_DIR . $file['filename'];
             if (file_exists($fullPath)) {
@@ -160,7 +160,7 @@ class FileController extends Controller {
         $filesToZip = [];
         foreach ($ids as $id) {
             $id = (int)$id;
-            $file = $this->fileModel->getById($id, $_SESSION['user_id']);
+            $file = $this->fileModel->getById($id, $_SESSION['user_email']);
             if ($file && !$file['is_folder']) {
                 $fullPath = UPLOAD_DIR . $file['filename'];
                 if (file_exists($fullPath)) {
@@ -197,12 +197,12 @@ class FileController extends Controller {
         }
         foreach ($ids as $id) {
             $id = (int)$id;
-            $file = $this->fileModel->getByIdEvenDeleted($id, $_SESSION['user_id']);
+            $file = $this->fileModel->getByIdEvenDeleted($id, $_SESSION['user_email']);
             if ($file) {
                 if ($file['is_folder']) {
-                    $this->fileModel->markDeletedRecursive($id, $_SESSION['user_id']);
+                    $this->fileModel->markDeletedRecursive($id, $_SESSION['user_email']);
                 } else {
-                    $this->fileModel->markDeleted($id, $_SESSION['user_id']);
+                    $this->fileModel->markDeleted($id, $_SESSION['user_email']);
                 }
             }
         }
@@ -213,18 +213,18 @@ class FileController extends Controller {
 
     public function restore() {
         $id = (int)($_GET['id'] ?? 0);
-        $this->fileModel->restore($id, $_SESSION['user_id']);
+        $this->fileModel->restore($id, $_SESSION['user_email']);
         $this->redirect('trash');
     }
 
     public function permanentDelete() {
         $id = (int)($_GET['id'] ?? 0);
-        $this->fileModel->permanentDelete($id, $_SESSION['user_id']);
+        $this->fileModel->permanentDelete($id, $_SESSION['user_email']);
         $this->redirect('trash');
     }
 
     public function trash() {
-        $files = $this->fileModel->getTrash($_SESSION['user_id']);
+        $files = $this->fileModel->getTrash($_SESSION['user_email']);
         $this->view('trash', ['files' => $files]);
     }
 
@@ -232,14 +232,14 @@ class FileController extends Controller {
         $query = $_GET['q'] ?? '';
         $files = [];
         if (!empty($query)) {
-            $files = $this->fileModel->search($_SESSION['user_id'], $query);
+            $files = $this->fileModel->search($_SESSION['user_email'], $query);
         }
         $this->view('dashboard', ['files' => $files, 'searchQuery' => $query, 'currentFolder' => null]);
     }
 
     public function share() {
         $id = (int)($_GET['id'] ?? 0);
-        $token = $this->fileModel->generateShareToken($id, $_SESSION['user_id']);
+        $token = $this->fileModel->generateShareToken($id, $_SESSION['user_email']);
         echo BASE_URL . "/public-share?token=$token";
     }
 
@@ -248,7 +248,7 @@ class FileController extends Controller {
         $links = [];
         foreach ($ids as $id) {
             $id = (int)$id;
-            $token = $this->fileModel->generateShareToken($id, $_SESSION['user_id']);
+            $token = $this->fileModel->generateShareToken($id, $_SESSION['user_email']);
             $links[] = BASE_URL . "/public-share?token=$token";
         }
         echo implode("\n", $links);
