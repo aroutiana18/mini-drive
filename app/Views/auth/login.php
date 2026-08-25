@@ -20,15 +20,15 @@
         <form method="POST" action="<?= BASE_URL ?>/login" class="space-y-6">
             <!-- Champ Utilisateur -->
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2" for="username">
-                    Nom d'utilisateur
+                <label class="block text-sm font-semibold text-gray-700 mb-2" for="email">
+                    Adresse email
                 </label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                         <i class="far fa-user"></i>
                     </span>
-                    <input type="text" id="username" name="username" required
-                           placeholder="votre_pseudo"
+                    <input type="email" name="email" placeholder="Adresse email" required
+                           placeholder="votrenom@12eni.mg"
                            class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
                 </div>
             </div>
