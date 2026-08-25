@@ -27,7 +27,7 @@
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                         <i class="far fa-user"></i>
                     </span>
-                    <input type="email" name="email" placeholder="Adresse email" required
+                    <input type="email" name="email" required
                            placeholder="votrenom@12eni.mg"
                            class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
                 </div>

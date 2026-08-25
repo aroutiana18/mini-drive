@@ -3,14 +3,17 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\UserModel;
+use App\Services\LdapService; 
 
 class AuthController extends Controller
 {
     private $userModel;
+    private $ldapService; 
 
     public function __construct()
     {
         $this->userModel = new UserModel();
+        $this->ldapService = new LdapService(); 
     }
 
     protected function authView($view, $data = [])
@@ -37,20 +40,21 @@ class AuthController extends Controller
             $email = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
 
-            $user = $this->userModel->authenticate($email, $password);
+            // Authentification via le serveur LDAP OpenLDAP
+            $ldapUser = $this->ldapService->authenticate($email, $password);
 
-            if ($user !== null) {
+            if ($ldapUser !== false) {
 
-                $_SESSION['user_id'] = $user['email'];
-                $_SESSION['email'] = $user['email'];
-                $_SESSION['username'] = $user['username'];
+                $_SESSION['user_id'] = $ldapUser['email'];
+                $_SESSION['email'] = $ldapUser['email'];
+                $_SESSION['username'] = $ldapUser['cn']; // Récupéré depuis le LDAP (cn)
 
                 $this->redirect('dashboard');
 
             } else {
 
                 $this->authView('auth/login', [
-                    'error' => 'Adresse email ou mot de passe incorrect.'
+                    'error' => 'Adresse email ou mot de passe incorrect (LDAP).'
                 ]);
             }
 
@@ -66,10 +70,6 @@ class AuthController extends Controller
             $this->redirect('dashboard');
         }
 
-        /*
-         * Les utilisateurs ne créent plus eux-mêmes
-         * leur compte LDAP.
-         */
         $this->authView('auth/register');
     }
 
