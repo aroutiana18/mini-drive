@@ -3,8 +3,8 @@
 // BD configuration
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'mini_drive');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_USER', 'mini_drive_user');
+define('DB_PASS', 'your-user-db-password');
 
 // Application
 define('BASE_URL', 'http://appli.l2eni.mg');
