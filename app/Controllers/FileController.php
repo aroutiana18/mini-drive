@@ -124,7 +124,9 @@ class FileController extends Controller {
                 $uniqueName = uniqid() . '.' . $ext;
                 $destination = UPLOAD_DIR . $uniqueName;
                 if (move_uploaded_file($tmpName, $destination)) {
-                    $filePath = $this->fileModel->getPath($currentParentId) . '/' . $uniqueName;
+                    $filePath = $currentParentId
+                        ? $this->fileModel->getPath($currentParentId) . '/' . $uniqueName
+                        : $uniqueName;                    
                     $this->fileModel->createFile($userEmail, $originalName, $uniqueName, $size, $mime, $filePath, $currentParentId);
                     $uploadedCount++;
                 }

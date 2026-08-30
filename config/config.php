@@ -7,7 +7,7 @@ define('DB_USER', 'mini_drive_user');
 define('DB_PASS', 'your-user-db-password');
 
 // Application
-define('BASE_URL', 'http://appli.l2eni.mg');
+define('BASE_URL', 'https://your.app.domain');
 
 define(
     'UPLOAD_DIR',

@@ -17,8 +17,7 @@ class LdapService
         }
 
         $connection = ldap_connect(
-            LDAP_HOST,
-            LDAP_PORT
+            'ldap://' . LDAP_HOST . ':'. LDAP_PORT
         );
 
         if ($connection === false) {

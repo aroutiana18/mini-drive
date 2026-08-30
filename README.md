@@ -1,13 +1,13 @@
 # Mini Drive
 
-> Lightweight self-hosted file storage built with PHP, MySQL and a custom MVC architecture.
+> A secure, LDAP-authenticated lightweight self-hosted file storage built with PHP, MySQL and a custom MVC architecture.
 
 ![PHP](https://img.shields.io/badge/PHP-Native-777BB4?logo=php&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?logo=mysql&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-Ubuntu-FCC624?logo=linux&logoColor=black)
 ![Status](https://img.shields.io/badge/Status-In%20Development-orange)
 
-Mini Drive is a lightweight, self-hosted web application for storing and managing personal files and directories.
+**Mini-Drive** is a self-hosted cloud storage web interface designed for enterprise directory infrastructures. Users authenticate against a central **OpenLDAP** directory server using their corporate credentials (`email` + `password`), while metadata and file ownership are mapped directly via **MariaDB** using session-based email tracking.
 
 The project is intentionally built with native PHP, without a third-party framework, to provide a practical implementation of MVC architecture, custom routing, database abstraction with PDO, file handling, and Linux filesystem permissions.
 
@@ -29,6 +29,7 @@ mini-drive/
 ├── index.php          # Application entry point
 └── README.md
 ```
+
 ---
 
 ## ✨ Features
@@ -45,7 +46,7 @@ mini-drive/
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Architecture & Data Architecture
 
 Mini Drive follows a lightweight MVC architecture implemented from scratch in native PHP.
 
@@ -57,18 +58,46 @@ The application uses:
 - **Router** to map HTTP requests to application controllers.
 - **PDO** for database communication.
 
+```text
+ ┌──────────────────┐
+ │     OpenLDAP     │
+ │                  │
+ │ email + password │
+ └────────┬─────────┘
+          │
+      authentifies
+          │
+          ▼
+ ┌──────────────────┐
+ │    Mini-Drive    │
+ │                  │
+ │ session email    │
+ └────────┬─────────┘
+          │
+     user_email
+          │
+          ▼
+ ┌──────────────────┐
+ │     MariaDB      │
+ │                  │
+ │ files            │
+ │ user_email       │
+ └──────────────────┘
+```
+
 ---
 
 ## 🛠️ Technical Stack
 
 | Layer | Technology |
 |---|---|
-| Backend | Native PHP |
+| Backend | Native PHP 8.x |
+| Authentication | OpenLDAP (`php-ldap`) |
 | Architecture | Custom MVC |
 | Database | MySQL / MariaDB |
-| Database Access | PDO |
+| Database Access | PDO (`pdo_mysql`) |
 | Frontend | HTML5, CSS3, JavaScript |
-| Web Server | Apache |
+| Web Server | Apache2 (`mod_rewrite`, SSL/TLS) |
 | Target Environment | Ubuntu Server / Linux |
 
 For local development, the application can be run using XAMPP or a native PHP/Apache environment.
@@ -76,6 +105,11 @@ For local development, the application can be run using XAMPP or a native PHP/Ap
 ---
 
 ## ⚙️ Installation
+
+### Prerequisites
+
+- Ubuntu Server running Apache2, MariaDB, and OpenLDAP.
+- PHP extensions: `php-ldap`, `php-mysql`.
 
 ### 1. Clone the repository
 
